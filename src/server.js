@@ -12,13 +12,13 @@ export async function setupServer() {
     app.use(PinoHttp());
 
 
-
-
     app.get('/contacts', async (req, res) => {
     try {
         const contacts = await getAllContacts();
         res.status(200)
-        .json({data: contacts,
+        .json({
+            status: 200,
+            data: contacts,
             message: "Successfully found contacts!"
          });
     } catch (error) {
@@ -31,7 +31,11 @@ export async function setupServer() {
         try {
             const contactId = req.params.id;
             const contact = await getContactById(contactId);
-            res.status(200).json({data: contact, message:"Successfully found contact!"});
+            
+            if (!contact) {
+                return res.status(404).json({ message: 'Contact not found' });
+            }
+            res.status(200).json({ status: 200,data: contact, message:"Successfully found contact!"});
         } catch (error) {
             res.status(404).json({ message: 'Not found' });
             console.log(error)
